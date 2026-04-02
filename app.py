@@ -26,43 +26,236 @@ if "ecg_result" not in st.session_state:
 # =========================
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+.stApp {
+    background: linear-gradient(180deg, #f8fbff 0%, #f3f6fb 100%);
+    color: #0f172a;
+}
+
 .block-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
     max-width: 1200px;
 }
 
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #ffffff;
+    border-right: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+section[data-testid="stSidebar"] .block-container {
+    padding-top: 1.4rem;
+}
+
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] label {
+    color: #0f172a !important;
+}
+
+/* Hero */
 .hero-card {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    padding: 2rem;
-    border-radius: 20px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 58%, #0f172a 100%);
+    padding: 2.3rem;
+    border-radius: 26px;
     color: white;
     margin-bottom: 1.5rem;
-    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 20px 45px rgba(37, 99, 235, 0.18);
+    border: 1px solid rgba(255,255,255,0.16);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-card::before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    right: -80px;
+    top: -80px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 50%;
+}
+
+.hero-card::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    right: 120px;
+    bottom: -100px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+}
+
+/* General cards */
+.metric-card,
+.section-box,
+.disclaimer-box,
+.info-card {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
 .metric-card {
-    background: #111827;
-    padding: 1rem;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.08);
+    padding: 1.1rem;
+}
+
+.section-box,
+.info-card {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .disclaimer-box {
-    background: #1f2937;
-    border-left: 5px solid #ef4444;
-    padding: 1rem;
-    border-radius: 12px;
+    padding: 1rem 1.1rem;
     margin-top: 1rem;
+    border-left: 5px solid #f59e0b;
 }
 
-.section-box {
-    background: #0f172a;
-    padding: 1.2rem;
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 1rem;
+.info-card {
+    border-left: 5px solid #2563eb;
 }
+
+/* Streamlit metrics */
+div[data-testid="metric-container"] {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 1rem 1rem;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+div[data-testid="metric-container"] label {
+    color: #475569 !important;
+    font-weight: 600;
+}
+
+div[data-testid="metric-container"] div[data-testid="stMetricValue"] {
+    color: #0f172a;
+    font-weight: 800;
+}
+
+/* Buttons */
+.stButton > button,
+.stFormSubmitButton > button {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 0.72rem 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+    transition: all 0.2s ease-in-out;
+}
+
+.stButton > button:hover,
+.stFormSubmitButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 26px rgba(37, 99, 235, 0.22);
+}
+
+/* Inputs */
+.stTextInput > div > div > input,
+.stNumberInput input,
+.stSelectbox > div > div,
+.stTextArea textarea {
+    border-radius: 14px !important;
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    background: #ffffff !important;
+}
+
+/* Form container */
+[data-testid="stForm"] {
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    border-radius: 22px;
+    padding: 1.2rem 1.1rem 0.8rem 1.1rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+/* Radio */
+div[role="radiogroup"] > label {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 0.55rem 0.8rem;
+    border-radius: 12px;
+    margin-bottom: 0.35rem;
+}
+
+/* File uploader */
+[data-testid="stFileUploader"] {
+    background: rgba(255,255,255,0.92);
+    border: 1px dashed rgba(37, 99, 235, 0.35);
+    border-radius: 18px;
+    padding: 0.75rem;
+}
+
+/* Alerts */
+[data-testid="stSuccess"] {
+    background: rgba(16, 185, 129, 0.10);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 14px;
+}
+
+[data-testid="stWarning"] {
+    background: rgba(245, 158, 11, 0.10);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 14px;
+}
+
+[data-testid="stInfo"] {
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    border-radius: 14px;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.hero-card h1,
+.hero-card h2,
+.hero-card h3,
+.hero-card h4,
+.hero-card p,
+.hero-card span {
+    color: white !important;
+    position: relative;
+    z-index: 2;
+}
+
+/* Paragraphs */
+p, li {
+    color: #334155;
+    line-height: 1.7;
+}
+
+/* Horizontal rule */
+hr {
+    border: none;
+    height: 1px;
+    background: rgba(15, 23, 42, 0.08);
+    margin: 1.5rem 0;
+}
+
+/* Hide streamlit default menu/footer */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -73,12 +266,15 @@ st.markdown("""
 def render_header():
     st.markdown("""
     <div class="hero-card">
-        <h1 style="margin-bottom:0.4rem;">CardioShield AI</h1>
-        <p style="font-size:1.1rem; margin-bottom:0.4rem;">
+        <p style="margin:0; font-size:0.92rem; font-weight:700; opacity:0.92; text-transform:uppercase; letter-spacing:0.08em;">
+            AI-Powered Cardiovascular Screening
+        </p>
+        <h1 style="margin-top:0.55rem; margin-bottom:0.65rem;">CardioShield AI</h1>
+        <p style="font-size:1.08rem; margin-bottom:0.45rem; max-width:760px;">
             Multimodal cardiovascular risk screening powered by machine learning and ECG image intelligence.
         </p>
-        <p style="opacity:0.9; margin-bottom:0;">
-            Built as an early-screening decision support MVP for scalable, low-cost heart risk assessment.
+        <p style="opacity:0.94; margin-bottom:0; max-width:760px;">
+            Built as an early-screening decision-support MVP for scalable, affordable, and clinically guided heart risk assessment.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -100,7 +296,9 @@ def format_probability(prob: float) -> str:
 # SIDEBAR
 # =========================
 with st.sidebar:
-    st.title("Navigation")
+    st.markdown("## CardioShield AI")
+    st.caption("Navigation")
+
     page = st.radio(
         "Go to",
         [
@@ -166,10 +364,13 @@ if page == "Home":
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("---")
+
+    st.markdown('<div class="info-card">', unsafe_allow_html=True)
     st.markdown("### Recommended demo flow")
     st.write("1. Run the Clinical Risk Prediction module")
     st.write("2. Run the ECG Analysis module")
     st.write("3. Open Combined Result to present the integrated summary")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # =========================
@@ -190,12 +391,12 @@ elif page == "Clinical Risk Prediction":
 
         with col2:
             cholesterol = st.number_input("Cholesterol", min_value=50, max_value=700, value=200)
-            fasting_blood_sugar = st.selectbox("Fasting Blood Sugar", [0, 1])
+            fasting_blood_sugar = st.selectbox("Fasting Blood Sugar", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
             resting_ecg = st.selectbox("Resting ECG", [0, 1, 2])
             max_heart_rate = st.number_input("Max Heart Rate", min_value=50, max_value=250, value=150)
 
         with col3:
-            exercise_angina = st.selectbox("Exercise Angina", [0, 1])
+            exercise_angina = st.selectbox("Exercise Angina", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
             oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
             st_slope = st.selectbox("ST Slope", [1, 2, 3])
 
@@ -227,7 +428,9 @@ elif page == "Clinical Risk Prediction":
         m3.metric("Risk Probability", format_probability(result["probability"]))
 
         st.markdown("### Clinical Interpretation")
+        st.markdown('<div class="section-box">', unsafe_allow_html=True)
         st.write(risk_recommendation(result["risk_label"]))
+        st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
         st.markdown("**Important**")
@@ -276,10 +479,12 @@ elif page == "ECG Analysis":
             c2.metric("Confidence", format_probability(result["confidence"]))
 
             st.markdown("### ECG Interpretation")
+            st.markdown('<div class="section-box">', unsafe_allow_html=True)
             st.write(
                 "The uploaded ECG image has been processed by the CNN screening model. "
                 "This result should be interpreted as a decision-support signal rather than a final diagnosis."
             )
+            st.markdown("</div>", unsafe_allow_html=True)
 
             st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
             st.markdown("**Clinical disclaimer**")
@@ -346,6 +551,7 @@ elif page == "Combined Result":
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("### Combined Interpretation")
+    st.markdown('<div class="info-card">', unsafe_allow_html=True)
     if combined["overall_risk"] == "Low Risk":
         st.write(
             "The available screening signals currently indicate a relatively lower immediate cardiovascular risk profile. "
@@ -361,6 +567,7 @@ elif page == "Combined Result":
             "The combined screening signals suggest elevated cardiovascular risk. "
             "Timely clinical follow-up and a more comprehensive diagnostic workup are strongly recommended."
         )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
     st.markdown("**MVP note**")
