@@ -94,7 +94,7 @@ section[data-testid="stSidebar"] label {
     border-radius: 50%;
 }
 
-/* General cards */
+/* Cards */
 .metric-card,
 .section-box,
 .disclaimer-box,
@@ -108,7 +108,9 @@ section[data-testid="stSidebar"] label {
 }
 
 .metric-card {
-    padding: 1.1rem;
+    padding: 14px 16px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.05);
 }
 
 .section-box,
@@ -292,6 +294,83 @@ def format_probability(prob: float) -> str:
     return f"{prob:.2%}"
 
 
+def get_risk_color(risk_label: str) -> str:
+    if risk_label == "Low Risk":
+        return "#10b981"
+    elif risk_label == "Medium Risk":
+        return "#f59e0b"
+    return "#ef4444"
+
+
+def render_result_badge(title: str, value: str, subtitle: str = "", color: str = "#2563eb"):
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, {color} 0%, {color}dd 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 1.25rem 1.2rem;
+        box-shadow: 0 14px 30px rgba(15,23,42,0.10);
+        border: 1px solid rgba(255,255,255,0.14);
+        margin-bottom: 1rem;
+    ">
+        <p style="margin:0; font-size:0.85rem; opacity:0.92; font-weight:600; color:white;">{title}</p>
+        <h2 style="margin:0.3rem 0 0.2rem 0; color:white;">{value}</h2>
+        <p style="margin:0; font-size:0.92rem; opacity:0.92; color:white;">{subtitle}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_progress_card(title: str, value: float, color: str = "#2563eb", help_text: str = ""):
+    pct = max(0, min(value * 100, 100))
+    st.markdown(f"""
+    <div style="
+        background:#ffffff;
+        border:1px solid rgba(15,23,42,0.08);
+        border-radius:18px;
+        padding:1rem 1rem 1.1rem 1rem;
+        box-shadow:0 8px 24px rgba(15,23,42,0.05);
+        margin-bottom:1rem;
+    ">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.55rem;">
+            <p style="margin:0; font-weight:700; color:#0f172a;">{title}</p>
+            <p style="margin:0; color:#475569; font-weight:600;">{pct:.1f}%</p>
+        </div>
+        <div style="
+            width:100%;
+            height:12px;
+            background:#e5e7eb;
+            border-radius:999px;
+            overflow:hidden;
+        ">
+            <div style="
+                width:{pct:.1f}%;
+                height:12px;
+                background:{color};
+                border-radius:999px;
+            "></div>
+        </div>
+        <p style="margin:0.65rem 0 0 0; font-size:0.92rem; color:#64748b;">{help_text}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_interpretation_card(title: str, body: str, accent: str = "#2563eb"):
+    st.markdown(f"""
+    <div style="
+        background:#ffffff;
+        border:1px solid rgba(15,23,42,0.08);
+        border-left:5px solid {accent};
+        border-radius:18px;
+        padding:1.1rem 1rem;
+        box-shadow:0 8px 24px rgba(15,23,42,0.05);
+        margin-bottom:1rem;
+    ">
+        <h4 style="margin-top:0; margin-bottom:0.5rem;">{title}</h4>
+        <p style="margin:0; color:#334155; line-height:1.7;">{body}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # =========================
 # SIDEBAR
 # =========================
@@ -348,12 +427,30 @@ if page == "Home":
         st.write("- Decision-support framing for patient and clinician use")
 
     with col2:
-        st.markdown('<div class="section-box">', unsafe_allow_html=True)
-        st.markdown("### Demo Highlights")
-        st.metric("Models", "2")
-        st.metric("Modalities", "Tabular + ECG")
-        st.metric("Deployment", "Streamlit Cloud")
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="section-box">
+            <h3 style="margin-bottom:1rem;">Demo Highlights</h3>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+
+                <div class="metric-card">
+                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Models</p>
+                    <h2 style="margin:0; color:#0f172a;">2</h2>
+                </div>
+
+                <div class="metric-card">
+                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Modalities</p>
+                    <h2 style="margin:0; color:#0f172a;">Tabular + ECG</h2>
+                </div>
+
+                <div class="metric-card">
+                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Deployment</p>
+                    <h2 style="margin:0; color:#0f172a;">Streamlit Cloud</h2>
+                </div>
+
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
         st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
         st.markdown("**Clinical disclaimer**")
@@ -366,7 +463,7 @@ if page == "Home":
     st.markdown("---")
 
     st.markdown('<div class="info-card">', unsafe_allow_html=True)
-    st.markdown("### Recommended demo flow")
+    st.markdown("### How to Use")
     st.write("1. Run the Clinical Risk Prediction module")
     st.write("2. Run the ECG Analysis module")
     st.write("3. Open Combined Result to present the integrated summary")
@@ -495,17 +592,46 @@ elif page == "Clinical Risk Prediction":
         result = predict_tabular(input_data)
         st.session_state.tabular_result = result
 
-        st.success("Clinical screening completed.")
+        st.success("Clinical screening completed successfully.")
 
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Predicted Class", result["prediction"])
-        m2.metric("Risk Category", result["risk_label"])
-        m3.metric("Risk Probability", format_probability(result["probability"]))
+        risk_color = get_risk_color(result["risk_label"])
 
-        st.markdown("### Clinical Interpretation")
-        st.markdown('<div class="section-box">', unsafe_allow_html=True)
-        st.write(risk_recommendation(result["risk_label"]))
-        st.markdown("</div>", unsafe_allow_html=True)
+        top1, top2 = st.columns([1.15, 1])
+
+        with top1:
+            render_result_badge(
+                "Clinical Risk Category",
+                result["risk_label"],
+                "AI-assisted structured screening outcome",
+                risk_color
+            )
+
+        with top2:
+            render_result_badge(
+                "Predicted Class",
+                str(result["prediction"]),
+                "Model classification output",
+                "#2563eb"
+            )
+
+        render_progress_card(
+            "Risk Probability",
+            result["probability"],
+            risk_color,
+            "Estimated probability from the tabular clinical risk model."
+        )
+
+        render_interpretation_card(
+            "Clinical Interpretation",
+            risk_recommendation(result["risk_label"]),
+            risk_color
+        )
+
+        st.markdown("### Summary")
+        s1, s2, s3 = st.columns(3)
+        s1.metric("Age", age)
+        s2.metric("Resting BP", f"{resting_bp_s} mm Hg")
+        s3.metric("Max Heart Rate", max_heart_rate)
 
         st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
         st.markdown("**Important**")
@@ -518,10 +644,39 @@ elif page == "Clinical Risk Prediction":
     elif st.session_state.tabular_result is not None:
         result = st.session_state.tabular_result
         st.info("Showing most recent clinical screening result.")
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Predicted Class", result["prediction"])
-        m2.metric("Risk Category", result["risk_label"])
-        m3.metric("Risk Probability", format_probability(result["probability"]))
+
+        risk_color = get_risk_color(result["risk_label"])
+
+        c1, c2 = st.columns([1.15, 1])
+
+        with c1:
+            render_result_badge(
+                "Clinical Risk Category",
+                result["risk_label"],
+                "Most recent saved result",
+                risk_color
+            )
+
+        with c2:
+            render_result_badge(
+                "Predicted Class",
+                str(result["prediction"]),
+                "Model classification output",
+                "#2563eb"
+            )
+
+        render_progress_card(
+            "Risk Probability",
+            result["probability"],
+            risk_color,
+            "Estimated probability from the tabular clinical risk model."
+        )
+
+        render_interpretation_card(
+            "Clinical Interpretation",
+            risk_recommendation(result["risk_label"]),
+            risk_color
+        )
 
 
 # =========================
@@ -549,17 +704,39 @@ elif page == "ECG Analysis":
 
             st.success("ECG analysis completed successfully.")
 
-            c1, c2 = st.columns(2)
-            c1.metric("Predicted ECG Class", result["class_name"])
-            c2.metric("Confidence", format_probability(result["confidence"]))
+            ecg_color = "#7c3aed" if result["class_name"].lower() not in ["normal", "low risk"] else "#10b981"
 
-            st.markdown("### ECG Interpretation")
-            st.markdown('<div class="section-box">', unsafe_allow_html=True)
-            st.write(
-                "The uploaded ECG image has been processed by the CNN screening model. "
-                "This result should be interpreted as a decision-support signal rather than a final diagnosis."
+            ec1, ec2 = st.columns([1.15, 1])
+
+            with ec1:
+                render_result_badge(
+                    "ECG Screening Output",
+                    result["class_name"],
+                    "CNN-based ECG image interpretation",
+                    ecg_color
+                )
+
+            with ec2:
+                render_result_badge(
+                    "Model Confidence",
+                    format_probability(result["confidence"]),
+                    "Prediction certainty score",
+                    "#2563eb"
+                )
+
+            render_progress_card(
+                "ECG Confidence Level",
+                result["confidence"],
+                ecg_color,
+                "Confidence score produced by the ECG image model."
             )
-            st.markdown("</div>", unsafe_allow_html=True)
+
+            render_interpretation_card(
+                "ECG Interpretation",
+                "The uploaded ECG image has been processed by the CNN screening model. "
+                "This output should be treated as a decision-support signal rather than a final diagnosis.",
+                ecg_color
+            )
 
             st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
             st.markdown("**Clinical disclaimer**")
@@ -572,9 +749,33 @@ elif page == "ECG Analysis":
     elif st.session_state.ecg_result is not None and st.session_state.ecg_result.get("success"):
         result = st.session_state.ecg_result
         st.info("Showing most recent ECG result.")
-        c1, c2 = st.columns(2)
-        c1.metric("Predicted ECG Class", result["class_name"])
-        c2.metric("Confidence", format_probability(result["confidence"]))
+
+        ecg_color = "#7c3aed" if result["class_name"].lower() not in ["normal", "low risk"] else "#10b981"
+
+        ec1, ec2 = st.columns([1.15, 1])
+
+        with ec1:
+            render_result_badge(
+                "ECG Screening Output",
+                result["class_name"],
+                "Most recent saved ECG result",
+                ecg_color
+            )
+
+        with ec2:
+            render_result_badge(
+                "Model Confidence",
+                format_probability(result["confidence"]),
+                "Prediction certainty score",
+                "#2563eb"
+            )
+
+        render_progress_card(
+            "ECG Confidence Level",
+            result["confidence"],
+            ecg_color,
+            "Confidence score produced by the ECG image model."
+        )
 
 
 # =========================
@@ -591,18 +792,39 @@ elif page == "Combined Result":
         st.warning("No screening results available yet. Run the Clinical Risk Prediction and/or ECG Analysis module first.")
         st.stop()
 
-    combined = combine_predictions(tabular_result if tabular_result else {"probability": 0.0}, ecg_result)
+    combined = combine_predictions(
+        tabular_result if tabular_result else {"probability": 0.0},
+        ecg_result
+    )
 
-    top1, top2, top3 = st.columns(3)
-    top1.metric("Overall Risk", combined["overall_risk"])
-    top2.metric("Combined Score", format_probability(combined["combined_score"]))
-    top3.metric(
-        "Available Modalities",
-        f"{int(tabular_result is not None) + int(ecg_result is not None)} / 2"
+    combined_color = get_risk_color(combined["overall_risk"])
+
+    top1, top2 = st.columns([1.15, 1])
+
+    with top1:
+        render_result_badge(
+            "Overall Screening Status",
+            combined["overall_risk"],
+            "Integrated result across available modules",
+            combined_color
+        )
+
+    with top2:
+        render_result_badge(
+            "Available Modalities",
+            f"{int(tabular_result is not None) + int(ecg_result is not None)} / 2",
+            "Clinical + ECG inputs used",
+            "#2563eb"
+        )
+
+    render_progress_card(
+        "Combined Screening Score",
+        combined["combined_score"],
+        combined_color,
+        "Blended MVP score generated from the available prediction modules."
     )
 
     st.markdown("### Module Summary")
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -625,24 +847,27 @@ elif page == "Combined Result":
             st.write("No ECG screening result available.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("### Combined Interpretation")
-    st.markdown('<div class="info-card">', unsafe_allow_html=True)
     if combined["overall_risk"] == "Low Risk":
-        st.write(
-            "The available screening signals currently indicate a relatively lower immediate cardiovascular risk profile. "
-            "Routine monitoring and healthy lifestyle maintenance remain advisable."
+        combined_text = (
+            "The available screening signals currently indicate a relatively lower immediate cardiovascular "
+            "risk profile. Routine monitoring and healthy lifestyle maintenance remain advisable."
         )
     elif combined["overall_risk"] == "Medium Risk":
-        st.write(
+        combined_text = (
             "The screening outputs suggest a moderate level of concern. "
             "Follow-up clinical review and further assessment are recommended."
         )
     else:
-        st.write(
+        combined_text = (
             "The combined screening signals suggest elevated cardiovascular risk. "
             "Timely clinical follow-up and a more comprehensive diagnostic workup are strongly recommended."
         )
-    st.markdown("</div>", unsafe_allow_html=True)
+
+    render_interpretation_card(
+        "Combined Interpretation",
+        combined_text,
+        combined_color
+    )
 
     st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
     st.markdown("**MVP note**")
@@ -673,7 +898,7 @@ elif page == "About":
     st.write(
         "The platform is designed around practical screening workflows rather than heavyweight hospital infrastructure. "
         "That makes it suitable for future deployment in clinics, telehealth systems, and resource-constrained settings."
-        )
+    )
 
     st.markdown("### Positioning")
     st.write(
