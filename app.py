@@ -384,21 +384,96 @@ elif page == "Clinical Risk Prediction":
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            age = st.number_input("Age", min_value=1, max_value=120, value=45)
-            sex = st.selectbox("Sex", [0, 1], format_func=lambda x: "Female" if x == 0 else "Male")
-            chest_pain_type = st.selectbox("Chest Pain Type", [1, 2, 3, 4])
-            resting_bp_s = st.number_input("Resting BP", min_value=50, max_value=250, value=120)
+            age = st.number_input("Age (years)", min_value=1, max_value=120, value=45)
+
+            sex = st.selectbox(
+                "Sex",
+                [0, 1],
+                format_func=lambda x: {
+                    0: "Female",
+                    1: "Male"
+                }[x]
+            )
+
+            chest_pain_type = st.selectbox(
+                "Chest Pain Type",
+                [1, 2, 3, 4],
+                format_func=lambda x: {
+                    1: "Typical angina",
+                    2: "Atypical angina",
+                    3: "Non-anginal pain",
+                    4: "Asymptomatic"
+                }[x]
+            )
+
+            resting_bp_s = st.number_input(
+                "Resting Blood Pressure (mm Hg)",
+                min_value=50,
+                max_value=250,
+                value=120
+            )
 
         with col2:
-            cholesterol = st.number_input("Cholesterol", min_value=50, max_value=700, value=200)
-            fasting_blood_sugar = st.selectbox("Fasting Blood Sugar", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
-            resting_ecg = st.selectbox("Resting ECG", [0, 1, 2])
-            max_heart_rate = st.number_input("Max Heart Rate", min_value=50, max_value=250, value=150)
+            cholesterol = st.number_input(
+                "Serum Cholesterol (mg/dL)",
+                min_value=50,
+                max_value=700,
+                value=200
+            )
+
+            fasting_blood_sugar = st.selectbox(
+                "Fasting Blood Sugar > 120 mg/dL",
+                [0, 1],
+                format_func=lambda x: {
+                    0: "No",
+                    1: "Yes"
+                }[x]
+            )
+
+            resting_ecg = st.selectbox(
+                "Resting Electrocardiogram Result",
+                [0, 1, 2],
+                format_func=lambda x: {
+                    0: "Normal",
+                    1: "ST-T wave abnormality",
+                    2: "Left ventricular hypertrophy"
+                }[x]
+            )
+
+            max_heart_rate = st.number_input(
+                "Maximum Heart Rate Achieved",
+                min_value=50,
+                max_value=250,
+                value=150
+            )
 
         with col3:
-            exercise_angina = st.selectbox("Exercise Angina", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
-            oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
-            st_slope = st.selectbox("ST Slope", [1, 2, 3])
+            exercise_angina = st.selectbox(
+                "Exercise-Induced Angina",
+                [0, 1],
+                format_func=lambda x: {
+                    0: "No",
+                    1: "Yes"
+                }[x]
+            )
+
+            oldpeak = st.number_input(
+                "ST Depression (Oldpeak)",
+                min_value=0.0,
+                max_value=10.0,
+                value=1.0,
+                step=0.1
+            )
+
+            st_slope = st.selectbox(
+                "Slope of Peak Exercise ST Segment",
+                [1, 2, 3],
+                format_func=lambda x: {
+                    1: "Upsloping",
+                    2: "Flat",
+                    3: "Downsloping"
+                }[x]
+            )
 
         submitted = st.form_submit_button("Run Clinical Screening")
 
@@ -598,7 +673,7 @@ elif page == "About":
     st.write(
         "The platform is designed around practical screening workflows rather than heavyweight hospital infrastructure. "
         "That makes it suitable for future deployment in clinics, telehealth systems, and resource-constrained settings."
-    )
+        )
 
     st.markdown("### Positioning")
     st.write(
