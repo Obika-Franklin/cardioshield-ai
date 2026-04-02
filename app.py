@@ -99,7 +99,7 @@ section[data-testid="stSidebar"] label {
 .section-box,
 .disclaimer-box,
 .info-card {
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
@@ -427,30 +427,31 @@ if page == "Home":
         st.write("- Decision-support framing for patient and clinician use")
 
     with col2:
-        st.markdown("""
-        <div class="section-box">
-            <h3 style="margin-bottom:1rem;">Demo Highlights</h3>
+        demo_html = """
+<div class="section-box">
+    <h3 style="margin-bottom:1rem;">Demo Highlights</h3>
 
-            <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="display:flex; flex-direction:column; gap:12px;">
 
-                <div class="metric-card">
-                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Models</p>
-                    <h2 style="margin:0; color:#0f172a;">2</h2>
-                </div>
-
-                <div class="metric-card">
-                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Modalities</p>
-                    <h2 style="margin:0; color:#0f172a;">Tabular + ECG</h2>
-                </div>
-
-                <div class="metric-card">
-                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Deployment</p>
-                    <h2 style="margin:0; color:#0f172a;">Streamlit Cloud</h2>
-                </div>
-
-            </div>
+        <div class="metric-card">
+            <p style="margin:0; font-size:0.8rem; color:#64748b;">Models</p>
+            <h2 style="margin:0; color:#0f172a;">2</h2>
         </div>
-        """, unsafe_allow_html=True)
+
+        <div class="metric-card">
+            <p style="margin:0; font-size:0.8rem; color:#64748b;">Modalities</p>
+            <h2 style="margin:0; color:#0f172a;">Tabular + ECG</h2>
+        </div>
+
+        <div class="metric-card">
+            <p style="margin:0; font-size:0.8rem; color:#64748b;">Deployment</p>
+            <h2 style="margin:0; color:#0f172a;">Streamlit Cloud</h2>
+        </div>
+
+    </div>
+</div>
+"""
+        st.markdown(demo_html, unsafe_allow_html=True)
 
         st.markdown('<div class="disclaimer-box">', unsafe_allow_html=True)
         st.markdown("**Clinical disclaimer**")
